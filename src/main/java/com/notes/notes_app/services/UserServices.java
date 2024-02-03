@@ -8,7 +8,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.notes.notes_app.entitiy.User;
+import com.notes.notes_app.model.User;
 import com.notes.notes_app.repositories.UserRepository;
 
 @Component
@@ -22,6 +22,7 @@ public class UserServices {
     
     user.setCreatedAt(dateTime);
     user.setNotes(new ArrayList<>());
+
 
     userRepository.save(user); 
     return user;
