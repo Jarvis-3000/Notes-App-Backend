@@ -1,0 +1,5 @@
+https://www.udemy.com/course/spring-framework-web-development-2020/?kw=learn+spring+5&src=sac
+
+https://www.udemy.com/course/spring-boot-microservices-cqrs-saga-axon-framework/
+
+learn swagger to document the APIs
