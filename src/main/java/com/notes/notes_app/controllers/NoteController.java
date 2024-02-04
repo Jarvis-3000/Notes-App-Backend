@@ -3,7 +3,6 @@ package com.notes.notes_app.controllers;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,68 +18,77 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.notes.notes_app.apis.NoteApi;
+import com.notes.notes_app.exchange.noteExchange.PostNoteRequest;
+import com.notes.notes_app.exchange.noteExchange.UpdateNoteRequest;
 import com.notes.notes_app.model.Note;
 import com.notes.notes_app.services.NoteServices;
 
 @RestController
-@RequestMapping("/notes")
+@RequestMapping("/users/{userId}/notes")
 public class NoteController implements NoteApi {
   @Autowired
   private NoteServices noteServices;
 
   @PostMapping
-  public ResponseEntity<Note> create(@RequestBody Note note) {
+  public ResponseEntity<Note> addNoteToUser(@PathVariable String userId, @RequestBody PostNoteRequest postNoteRequest) {
     try {
-      Note createdNote = noteServices.create(note);
+      Note createdNote = noteServices.addNoteToUser(userId, postNoteRequest);
       return new ResponseEntity<>(createdNote, HttpStatus.CREATED);
     } catch (ResponseStatusException exception) {
-      return new ResponseEntity<>(HttpStatus.CONFLICT);
+      return new ResponseEntity<>(exception.getStatusCode());
     }
   }
 
   @GetMapping
-  public ResponseEntity<List<Note>> getAll() {
-    List<Note> notes = noteServices.getAll();
-
-    return new ResponseEntity<>(notes, HttpStatus.OK);
+  public ResponseEntity<List<Note>> getAllNotesOfUser(@PathVariable String userId) {
+    try {
+      List<Note> notes = noteServices.getAllNotesOfUser(userId);
+      return new ResponseEntity<>(notes, HttpStatus.OK);
+    } catch (ResponseStatusException exception) {
+      return new ResponseEntity<>(exception.getStatusCode());
+    }
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<Note> getById(@PathVariable ObjectId id) {
-    Note note = noteServices.getById(id);
-
-    if (note == null) {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+  public ResponseEntity<Note> getById(@PathVariable String id) {
+    try {
+      Note note = noteServices.getById(id);
+      return new ResponseEntity<>(note, HttpStatus.OK);
+    } catch (ResponseStatusException exception) {
+      return new ResponseEntity<>(exception.getStatusCode());
     }
-
-    return new ResponseEntity<>(note, HttpStatus.OK);
   }
 
   @GetMapping("/title")
-  public ResponseEntity<List<Note>> getByTitle(@RequestParam String title) {
-    List<Note> note = noteServices.getByTitle(title);
-
-    if (note == null) {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+  public ResponseEntity<List<Note>> getByTitle(@PathVariable String userId, @RequestParam String title) {
+    try {
+      List<Note> note = noteServices.getByTitle(userId, title);
+      return new ResponseEntity<>(note, HttpStatus.OK);
+    } catch (ResponseStatusException exception) {
+      return new ResponseEntity<>(exception.getStatusCode());
     }
-
-    return new ResponseEntity<>(note, HttpStatus.OK);
   }
 
   @GetMapping("/dates")
-  public ResponseEntity<List<Note>> getByCreatedDateRange(@RequestParam String start, @RequestParam String end) {
-    List<Note> note = noteServices.getByCreatedDateRange(LocalDate.parse(start), LocalDate.parse(end));
+  public ResponseEntity<List<Note>> getByCreatedDateRange(@PathVariable String userId, @RequestParam String start,
+      @RequestParam String end) {
+    try {
+      LocalDate startDate = LocalDate.parse(start);
+      LocalDate endDate = LocalDate.parse(end);
 
-    if (note == null) {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+      List<Note> note = noteServices.getByCreatedDateRange(userId, startDate, endDate);
+      return new ResponseEntity<>(note, HttpStatus.OK);
+    } catch (ResponseStatusException exception) {
+      return new ResponseEntity<>(exception.getStatusCode());
+    } catch (Exception e) {
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
-
-    return new ResponseEntity<>(note, HttpStatus.OK);
   }
 
-  @PutMapping("/{id}")
-  public ResponseEntity<Note> updateById(@PathVariable ObjectId id, @RequestBody Note note) {
-    Note updatedNote = noteServices.updateById(id, note);
+  @PutMapping("/{noteId}")
+  public ResponseEntity<Note> updateById(@PathVariable String userId, @PathVariable String noteId,
+      @RequestBody UpdateNoteRequest updateNoteRequest) {
+    Note updatedNote = noteServices.updateById(noteId, updateNoteRequest);
 
     if (updatedNote == null) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -89,19 +97,23 @@ public class NoteController implements NoteApi {
     return new ResponseEntity<>(updatedNote, HttpStatus.OK);
   }
 
-  @DeleteMapping("/{id}")
-  public ResponseEntity<?> deleteById(@PathVariable ObjectId id) {
-    if (noteServices.getById(id) == null) {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+  @DeleteMapping("/{noteId}")
+  public ResponseEntity<Boolean> deleteById(@PathVariable String userId, @PathVariable String noteId) {
+    try {
+      boolean response = noteServices.deleteById(userId, noteId);
+      return new ResponseEntity<>(response, HttpStatus.OK);
+    } catch (ResponseStatusException exception) {
+      return new ResponseEntity<>(exception.getStatusCode());
     }
-
-    noteServices.deleteById(id);
-    return new ResponseEntity<>(HttpStatus.OK);
   }
 
   @DeleteMapping
-  public ResponseEntity<?> deleteAll() {
-    noteServices.deleteAll();
-    return new ResponseEntity<>(HttpStatus.OK);
+  public ResponseEntity<?> deleteAll(@PathVariable String userId) {
+    try {
+      boolean response = noteServices.deleteAll(userId);
+      return new ResponseEntity<>(response, HttpStatus.OK);
+    } catch (ResponseStatusException exception) {
+      return new ResponseEntity<>(exception.getStatusCode());
+    }
   }
 }
