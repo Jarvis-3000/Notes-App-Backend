@@ -20,7 +20,7 @@ import lombok.extern.log4j.Log4j2;
 import com.notes.notes_app.apis.UserApi;
 import com.notes.notes_app.exchange.userExchange.PostUserRequest;
 import com.notes.notes_app.exchange.userExchange.UpdateUserRequest;
-import com.notes.notes_app.model.User;
+import com.notes.notes_app.model.UserEntity;
 import com.notes.notes_app.services.UserServices;
 
 @Log4j2
@@ -30,25 +30,19 @@ public class UserController implements UserApi {
   @Autowired
   private UserServices userServices;
 
-  @PostMapping
-  public ResponseEntity<User> create(@RequestBody PostUserRequest postUserRequest) {
-    User createdUser = userServices.create(postUserRequest);
-
-    return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
-  }
 
   @GetMapping
-  public ResponseEntity<List<User>> getAll() {
+  public ResponseEntity<List<UserEntity>> getAll() {
     log.error("Request for All Users");
-    List<User> users = userServices.findAll();
+    List<UserEntity> users = userServices.findAll();
     log.warn("All users sent");
     return new ResponseEntity<>(users, HttpStatus.OK);
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<User> getById(@PathVariable String id) {
+  public ResponseEntity<UserEntity> getById(@PathVariable String id) {
     try {
-      User user = userServices.findById(id);
+      UserEntity user = userServices.findById(id);
       return new ResponseEntity<>(user, HttpStatus.OK);
     } catch (ResponseStatusException e) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -56,9 +50,9 @@ public class UserController implements UserApi {
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<User> updateById(@PathVariable String id, @RequestBody UpdateUserRequest updateUserRequest) {
+  public ResponseEntity<UserEntity> updateById(@PathVariable String id, @RequestBody UpdateUserRequest updateUserRequest) {
     try {
-      User updatedUser = userServices.updateById(id, updateUserRequest);
+      UserEntity updatedUser = userServices.updateById(id, updateUserRequest);
       return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     } catch (ResponseStatusException e) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -66,10 +60,10 @@ public class UserController implements UserApi {
   }
 
   @PutMapping("/username/{oldUsername}")
-  public ResponseEntity<User> updateByUsername(@PathVariable String oldUsername,
+  public ResponseEntity<UserEntity> updateByUsername(@PathVariable String oldUsername,
       @RequestBody UpdateUserRequest updateUserRequest) {
     try {
-      User updatedUser = userServices.updateByUsername(oldUsername, updateUserRequest);
+      UserEntity updatedUser = userServices.updateByUsername(oldUsername, updateUserRequest);
       return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     } catch (ResponseStatusException e) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);

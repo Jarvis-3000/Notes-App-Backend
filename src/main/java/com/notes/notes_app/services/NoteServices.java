@@ -13,7 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.notes.notes_app.exchange.noteExchange.PostNoteRequest;
 import com.notes.notes_app.exchange.noteExchange.UpdateNoteRequest;
 import com.notes.notes_app.model.Note;
-import com.notes.notes_app.model.User;
+import com.notes.notes_app.model.UserEntity;
 import com.notes.notes_app.repositories.NoteRepository;
 
 @Component
@@ -25,7 +25,7 @@ public class NoteServices {
   private NoteRepository noteRepository;
 
   public Note addNoteToUser(String userId, PostNoteRequest postNoteRequest) throws ResponseStatusException {
-    User user = getUserOrThrowException(userId);
+    UserEntity user = getUserOrThrowException(userId);
 
     LocalDateTime dateTime = LocalDateTime.now();
 
@@ -43,7 +43,7 @@ public class NoteServices {
   }
 
   public List<Note> getAllNotesOfUser(String userId) {
-    User user = getUserOrThrowException(userId);
+    UserEntity user = getUserOrThrowException(userId);
 
     return user.getNotes();
   }
@@ -53,7 +53,7 @@ public class NoteServices {
   }
 
   public List<Note> getByTitle(String userId, String titleSubString) {
-    User user = getUserOrThrowException(userId);
+    UserEntity user = getUserOrThrowException(userId);
 
     List<Note> filteredNotes = user.getNotes().stream()
         .filter(note -> {
@@ -66,7 +66,7 @@ public class NoteServices {
   }
 
   public List<Note> getByCreatedDateRange(String userId, LocalDate startDate, LocalDate endDate) {
-    User user = getUserOrThrowException(userId);
+    UserEntity user = getUserOrThrowException(userId);
 
     List<Note> notes = user.getNotes();
 
@@ -102,7 +102,7 @@ public class NoteServices {
   }
 
   public boolean deleteById(String userId, String noteId) throws ResponseStatusException {
-    User user = userServices.findById(userId);
+    UserEntity user = userServices.findById(userId);
 
     if (user == null) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found for given id");
@@ -123,7 +123,7 @@ public class NoteServices {
   }
 
   public boolean deleteAll(String userId) {
-    User user = getUserOrThrowException(userId);
+    UserEntity user = getUserOrThrowException(userId);
 
     // Delete notes from the NoteRepository
     for (Note note : user.getNotes()) {
@@ -138,9 +138,9 @@ public class NoteServices {
     return !date.isBefore(startDate) && !date.isAfter(endDate);
   }
 
-  private User getUserOrThrowException(String id) throws ResponseStatusException {
+  private UserEntity getUserOrThrowException(String id) throws ResponseStatusException {
     try {
-      User user = userServices.findById(id);
+      UserEntity user = userServices.findById(id);
       return user;
     } catch (Exception e) {
       throw e;

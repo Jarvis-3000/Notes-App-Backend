@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.notes.notes_app.exchange.userExchange.PostUserRequest;
 import com.notes.notes_app.exchange.userExchange.UpdateUserRequest;
-import com.notes.notes_app.model.User;
+import com.notes.notes_app.model.UserEntity;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -20,26 +20,26 @@ import java.util.List;
 @Tag(name = "Users", description = "Users Endpoints")
 public interface UserApi {
 
-    @Operation(summary = "Create a new user", description = "Creates a new user and returns the created user")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Successfully created a user", content = {
-                    @Content(schema = @Schema(implementation = User.class), mediaType = "application/json") }),
-            @ApiResponse(responseCode = "409", description = "Duplicate username")
-    })
-    public ResponseEntity<User> create(@RequestBody PostUserRequest postUserRequest);
+//     @Operation(summary = "Create a new user", description = "Creates a new user and returns the created user")
+//     @ApiResponses(value = {
+//             @ApiResponse(responseCode = "201", description = "Successfully created a user", content = {
+//                     @Content(schema = @Schema(implementation = UserEntity.class), mediaType = "application/json") }),
+//             @ApiResponse(responseCode = "409", description = "Duplicate username")
+//     })
+//     public ResponseEntity<UserEntity> create(@RequestBody PostUserRequest postUserRequest);
 
     @Operation(summary = "Get all users", description = "Get all users")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved all the users")
     })
-    public ResponseEntity<List<User>> getAll();
+    public ResponseEntity<List<UserEntity>> getAll();
 
     @Operation(summary = "Get the user by id", description = "Get the user by id if exist")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved the user by id"),
             @ApiResponse(responseCode = "404", description = "Operation failed because id does not exist"),
     })
-    public ResponseEntity<User> getById(@PathVariable String id);
+    public ResponseEntity<UserEntity> getById(@PathVariable String id);
 
     @Operation(summary = "Update the user by id", description = "Update the user by id and return updated user")
     @ApiResponses(value = {
@@ -47,7 +47,7 @@ public interface UserApi {
             @ApiResponse(responseCode = "404", description = "Id not found"),
             @ApiResponse(responseCode = "400", description = "Bad request")
     })
-    public ResponseEntity<User> updateById(@PathVariable String id, @RequestBody UpdateUserRequest updateUserRequest);
+    public ResponseEntity<UserEntity> updateById(@PathVariable String id, @RequestBody UpdateUserRequest updateUserRequest);
 
     @Operation(summary = "Update the user by username", description = "Update the user by username and return updated user")
     @ApiResponses(value = {
@@ -55,7 +55,7 @@ public interface UserApi {
             @ApiResponse(responseCode = "404", description = "Id not found"),
             @ApiResponse(responseCode = "400", description = "Bad request")
     })
-    public ResponseEntity<User> updateByUsername(@PathVariable String oldUsername, @RequestBody UpdateUserRequest updateUserRequest);
+    public ResponseEntity<UserEntity> updateByUsername(@PathVariable String oldUsername, @RequestBody UpdateUserRequest updateUserRequest);
 
     @Operation(summary = "Delete the user by id", description = "Delete the user by id and return status of deletion")
     @ApiResponses(value = {
